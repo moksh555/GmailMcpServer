@@ -14,6 +14,14 @@ from config import settings
 
 gmailMcpServer = FastMCP("Gmail")
 
+gmailMcpServer.app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows the MCP Inspector to connect
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
 
 def getGmailServices():
