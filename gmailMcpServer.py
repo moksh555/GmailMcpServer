@@ -116,4 +116,9 @@ def searchMessages(query: str, category: list[str] = ["INBOX"], maxResults: int 
         return f"Gmail Search Error: {error}"
 
 if __name__ == "__main__":
-    gmailMcpServer.run()
+    port = int(os.environ.get("PORT", 10000))
+    gmailMcpServer.run(
+        transport="http", 
+        host="0.0.0.0", 
+        port=port
+    )
