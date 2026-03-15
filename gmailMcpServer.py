@@ -11,9 +11,11 @@ import pickle
 from email.message import EmailMessage
 import base64
 from config import settings
+from starlette.middleware.cors import CORSMiddleware
+from starlette.applications import Starlette
+from starlette.middleware import Middleware
 
 gmailMcpServer = FastMCP("Gmail")
-
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
 
@@ -116,10 +118,17 @@ def searchMessages(query: str, category: list[str] = ["INBOX"], maxResults: int 
     except HttpError as error:
         return f"Gmail Search Error: {error}"
 
+middleware = [
+    Middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+]
+
+app = Starlette(middleware=middleware)
+app.mount("/", gmailMcpServer.http_app())
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     gmailMcpServer.run(
         transport="http", 
         host="0.0.0.0", 
-        port=port
+        port=port,
     )
