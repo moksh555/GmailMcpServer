@@ -120,5 +120,6 @@ if __name__ == "__main__":
     gmailMcpServer.run(
         transport="http", 
         host="0.0.0.0", 
-        port=port
+        port=port,
+        base_path="mcp"
     )
