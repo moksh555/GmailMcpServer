@@ -116,16 +116,16 @@ def searchMessages(query: str, category: list[str] = ["INBOX"], maxResults: int 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     gmailMcpServer.run(
-        transport="stdio",
-        # host="0.0.0.0",
-        # port=port,
-        # middleware=[
-        #     Middleware(
-        #         CORSMiddleware,
-        #         allow_origins=["*"],
-        #         allow_methods=["*"],
-        #         allow_headers=["*"],
-        #         expose_headers=["mcp-session-id"],
-        #     )
-        # ]
+        transport="http",
+        host="0.0.0.0",
+        port=port,
+        middleware=[
+            Middleware(
+                CORSMiddleware,
+                allow_origins=["*"],
+                allow_methods=["*"],
+                allow_headers=["*"],
+                expose_headers=["mcp-session-id"],
+            )
+        ]
     )

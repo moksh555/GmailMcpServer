@@ -7,10 +7,6 @@ ENV_FILE_PATH = CURRENT_FOLDER / ".env"
 
 class Settings(BaseSettings):
     
-
-    PROJECT_ID: str
-    SECRET_NAME: str
-    GMAIL_TOKEN_SECRET_NAME: str
     GMAIL_TOKEN_PATH: str
 
     model_config = SettingsConfigDict(
