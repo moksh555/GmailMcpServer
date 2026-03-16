@@ -1,2 +1,4 @@
 .env
 token.json
+token_new.json
+*.json
