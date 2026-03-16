@@ -20,9 +20,14 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
 
 def getGmailServices():
     creds = None
-    if os.path.exists('token.json'):
-        with open('token.json', 'rb') as token:
-            creds = pickle.load(token)
+    token_path = settings.GMAIL_TOKEN_PATH or "token.json"
+    if os.path.exists(token_path):
+        with open(token_path, 'rb') as f:
+            try:
+                creds = pickle.load(f) 
+            except Exception:
+                creds = Credentials.from_authorized_user_info(json.load(f)) 
+
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
@@ -33,10 +38,6 @@ def getGmailServices():
             
             flow = InstalledAppFlow.from_client_config(client_config, SCOPES)
             creds = flow.run_local_server(port=0)
-            
-        # Save the session token
-        with open('token.json', 'wb') as token:
-            pickle.dump(creds, token)
 
     return build('gmail', 'v1', credentials=creds)
 
@@ -120,16 +121,16 @@ def searchMessages(query: str, category: list[str] = ["INBOX"], maxResults: int 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     gmailMcpServer.run(
-        transport="streamable-http",
-        host="0.0.0.0",
-        port=port,
-        middleware=[
-            Middleware(
-                CORSMiddleware,
-                allow_origins=["*"],
-                allow_methods=["*"],
-                allow_headers=["*"],
-                expose_headers=["mcp-session-id"],
-            )
-        ]
+        transport="stdio",
+        # host="0.0.0.0",
+        # port=port,
+        # middleware=[
+        #     Middleware(
+        #         CORSMiddleware,
+        #         allow_origins=["*"],
+        #         allow_methods=["*"],
+        #         allow_headers=["*"],
+        #         expose_headers=["mcp-session-id"],
+        #     )
+        # ]
     )
