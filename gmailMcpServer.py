@@ -1,6 +1,5 @@
 from fastmcp import FastMCP
 import json
-from google.cloud import secretmanager
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -21,23 +20,19 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
 def getGmailServices():
     creds = None
     token_path = settings.GMAIL_TOKEN_PATH or "token.json"
+
     if os.path.exists(token_path):
         with open(token_path, 'rb') as f:
             try:
-                creds = pickle.load(f) 
+                creds = pickle.load(f)
             except Exception:
-                creds = Credentials.from_authorized_user_info(json.load(f)) 
+                creds = Credentials.from_authorized_user_info(json.load(f))
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            client = secretmanager.SecretManagerServiceClient()
-            response = client.access_secret_version(request={"name": settings.SECRET_NAME})
-            client_config = json.loads(response.payload.data.decode("UTF-8"))
-            
-            flow = InstalledAppFlow.from_client_config(client_config, SCOPES)
-            creds = flow.run_local_server(port=0)
+            raise Exception("No valid credentials found. Upload token.json as a secret file on Render.")
 
     return build('gmail', 'v1', credentials=creds)
 
